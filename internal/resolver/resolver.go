@@ -10,8 +10,14 @@ type resolver struct {
 }
 
 func (r resolver) ExampleResolver(params graphql.ResolveParams) (interface{}, error) {
-	return grip.ExampleEntity{
-		ID: "example-id",
+	exampleEdge := grip.ExampleEdge{
+		Node: grip.ExampleEntity{
+			ID: "example-id",
+		},
+	}
+
+	return grip.ExampleResult{
+		Edges: []grip.ExampleEdge{exampleEdge},
 	}, nil
 }
 
