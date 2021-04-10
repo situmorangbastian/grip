@@ -9,7 +9,7 @@ import (
 type resolver struct {
 }
 
-func (r resolver) ExampleResolver(params graphql.ResolveParams) (interface{}, error) {
+func (r resolver) Fetch(params graphql.ResolveParams) (interface{}, error) {
 	exampleEdge := grip.ExampleEdge{
 		Node: grip.ExampleEntity{
 			ID: "example-id",
@@ -18,6 +18,12 @@ func (r resolver) ExampleResolver(params graphql.ResolveParams) (interface{}, er
 
 	return grip.ExampleResult{
 		Edges: []grip.ExampleEdge{exampleEdge},
+	}, nil
+}
+
+func (r resolver) Store(params graphql.ResolveParams) (interface{}, error) {
+	return grip.ExampleEntity{
+		ID: "example-id",
 	}, nil
 }
 

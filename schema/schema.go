@@ -17,7 +17,7 @@ func (s Schema) Query() *graphql.Object {
 				Type:        ExampleResult,
 				Description: "Fetch Example Entity",
 				Args:        graphql.FieldConfigArgument{},
-				Resolve:     s.resolver.ExampleResolver,
+				Resolve:     s.resolver.Fetch,
 			},
 		},
 	}
@@ -37,7 +37,7 @@ func (s Schema) Mutation() *graphql.Object {
 						Type: graphql.NewNonNull(json),
 					},
 				},
-				Resolve: s.resolver.ExampleResolver,
+				Resolve: s.resolver.Store,
 			},
 		},
 	}
