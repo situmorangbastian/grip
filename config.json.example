@@ -1,0 +1,12 @@
+{
+    "graphql_server": {
+        "address": ":4221"
+    },
+    "graphiql_server": {
+        "address": ":4222"
+    },
+    "http": {
+        "server_read_timeout": 15,
+        "server_write_timeout": 15
+    }
+}
