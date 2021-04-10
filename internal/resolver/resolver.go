@@ -10,7 +10,9 @@ type resolver struct {
 }
 
 func (r resolver) ExampleResolver(params graphql.ResolveParams) (interface{}, error) {
-	return nil, nil
+	return grip.ExampleEntity{
+		ID: "example-id",
+	}, nil
 }
 
 // Initiator is a function type
