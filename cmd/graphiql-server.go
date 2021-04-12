@@ -28,12 +28,10 @@ var graphiqlServerCMD = &cobra.Command{
 		})
 
 		handler := graphqlHandler.New(&graphqlHandler.Config{
-			Schema:   initSchema(),
-			Pretty:   true,
-			GraphiQL: true,
-			FormatErrorFn: func(err error) gqlerrors.FormattedError {
-				return gqlerrors.FormatError(err)
-			},
+			Schema:        initSchema(),
+			Pretty:        true,
+			GraphiQL:      true,
+			FormatErrorFn: gqlerrors.FormatError,
 		})
 
 		e.GET("/graphiql", echo.WrapHandler(handler))
