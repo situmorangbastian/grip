@@ -1,5 +1,5 @@
 run-server:
-	go run cmd/grip/main.go graphql
+	go run app/main.go graphql
 
 graphql:
 	go run github.com/99designs/gqlgen generate
