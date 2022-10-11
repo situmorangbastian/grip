@@ -1,0 +1,11 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Example {
+  id: ID!
+}
+
+type Query {
+  examples: [Example!]!
+}
