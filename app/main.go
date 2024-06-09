@@ -11,10 +11,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
-	"github.com/spf13/viper"
-
 	"github.com/situmorangbastian/grip/graph"
-	"github.com/situmorangbastian/grip/graph/generated"
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -30,7 +28,7 @@ func main() {
 		log.Fatal("port not set")
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
 	http.Handle("/query", srv)
 
