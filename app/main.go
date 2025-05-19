@@ -2,17 +2,22 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/labstack/echo/v4"
-	"github.com/situmorangbastian/grip/graph"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/spf13/viper"
+
+	"github.com/situmorangbastian/grip/graph"
 )
 
 func main() {
@@ -28,32 +33,33 @@ func main() {
 		log.Fatal("port not set")
 	}
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.New(graph.NewExecutableSchema(graph.NewResolver()))
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+	srv.Use(extension.Introspection{})
 
-	http.Handle("/query", srv)
-
-	e := echo.New()
-	e.HideBanner = true
+	app := fiber.New()
 	if viper.GetString("ENV") == "development" {
-		e.GET("/", echo.WrapHandler(playground.Handler("GraphQL playground", "/query")))
+		app.Get("/", adaptor.HTTPHandler(playground.Handler("GraphQL playground", "/query")))
 	}
-	e.POST("/query", echo.WrapHandler(srv))
+	app.Post("/query", adaptor.HTTPHandler(srv))
 
-	// Start server
 	go func() {
-		if err := e.Start(":" + port); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("shutting down the server")
+		if err := app.Listen(fmt.Sprintf(":%s", port)); err != nil {
+			log.Fatal(err)
 		}
 	}()
 
-	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
-	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
+	if err := app.Shutdown(); err != nil {
+		log.Fatal(err)
+	}
+
+	select {
+	case <-ctx.Done():
 	}
 }
